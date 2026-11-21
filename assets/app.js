@@ -1,4 +1,17 @@
 (function () {
+/* قناع الأرض: يُرسم الشكل مرة واحدة، ثم يُختبر كل نقطة بقراءة ألفا، بدل اختبار المسار لكل نقطة */
+function landMask(path, m, wPx, hPx) {
+  const c = document.createElement('canvas'); c.width = wPx; c.height = hPx;
+  const o = c.getContext('2d', { willReadFrequently: true });
+  o.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+  o.fill(path);
+  return { w: wPx, h: hPx, a: o.getImageData(0, 0, wPx, hPx).data };
+}
+function landHas(mask, x, y, dpr) {
+  const px = Math.round(x * dpr), py = Math.round(y * dpr);
+  if (px < 0 || py < 0 || px >= mask.w || py >= mask.h) return false;
+  return mask.a[(py * mask.w + px) * 4 + 3] > 127;
+}
   const D = JSON.parse(document.getElementById('data').textContent);
   /* تفريق النقاط: سجلات الموضع الواحد كانت تقع على نقطة واحدة، فتتوزع الآن حولها بزاوية ذهبية ونصف قطر يتسع مع العدد.
      النقطة الأولى تبقى في مكانها، ويتغيّر الموضع المعروض فقط لا السجل. */
@@ -99,13 +112,12 @@
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       S = Math.min((W * 0.94) / BW, (H * 0.8) / BH);
       OX = (W - BW * S) / 2; OY = (H - BH * S) / 2;
-      const M = new DOMMatrix([S * dpr, 0, 0, S * dpr, (OX - BX0 * S) * dpr, (OY - BY0 * S) * dpr]);
-      const P = new Path2D(); P.addPath(LAND, M);
+      const mask = landMask(LAND, [S * dpr, 0, 0, S * dpr, (OX - BX0 * S) * dpr, (OY - BY0 * S) * dpr], cv.width, cv.height);
       dots = [];
       const g = wide() ? 4 : 3;
       for (let y = 0; y < H; y += g) for (let x = 0; x < W; x += g) {
         const jx = x + (Math.random() - 0.5) * 1.2, jy = y + (Math.random() - 0.5) * 1.2;
-        if (ctx.isPointInPath(P, jx * dpr, jy * dpr)) dots.push({ x: jx, y: jy, a: 0.3 + Math.random() * 0.7 });
+        if (landHas(mask, jx, jy, dpr)) dots.push({ x: jx, y: jy, a: 0.3 + Math.random() * 0.7 });
       }
       groups.forEach(gr => {
         gr.pts = gr.list.map(q => ({ q, xy: toC(q), r: 1.8 + Math.sqrt(q.f ? q.f.length : 1) * 1.5 }));
@@ -2960,13 +2972,12 @@
       if (W >= 720) { S = Math.min((W * 0.94) / BW, (H * 0.46) / BH); OX = (W - BW * S) / 2; OY = H - BH * S - H * 0.03; }
       else { S = Math.min((W * 0.96) / BW, (H * 0.42) / BH); OX = (W - BW * S) / 2; OY = H * 0.5; }
       [ox0, oy0] = toC(origin);
-      const M = new DOMMatrix([S * dpr, 0, 0, S * dpr, (OX - BX0 * S) * dpr, (OY - BY0 * S) * dpr]);
-      const P = new Path2D(); P.addPath(LAND, M);
+      const mask = landMask(LAND, [S * dpr, 0, 0, S * dpr, (OX - BX0 * S) * dpr, (OY - BY0 * S) * dpr], cv.width, cv.height);
       dots = [];
       const g = W >= 720 ? 4 : 3;
       for (let y = 0; y < H; y += g) for (let x = 0; x < W; x += g) {
         const jx = x + (Math.random() - 0.5) * 1.2, jy = y + (Math.random() - 0.5) * 1.2;
-        if (ctx.isPointInPath(P, jx * dpr, jy * dpr)) dots.push({ x: jx, y: jy, d: Math.hypot(jx - ox0, jy - oy0), a: 0.35 + Math.random() * 0.65 });
+        if (landHas(mask, jx, jy, dpr)) dots.push({ x: jx, y: jy, d: Math.hypot(jx - ox0, jy - oy0), a: 0.35 + Math.random() * 0.65 });
       }
       maxD = dots.reduce((m, q) => Math.max(m, q.d), 1);
       PLC = PL.map(q => { const xy = toC(q); return { k: q.p, c: q.c, xy, d: Math.hypot(xy[0] - ox0, xy[1] - oy0) }; });
@@ -3631,12 +3642,12 @@
       return { S, ox, oy, to: q => [ox + q.x * S, oy + q.y * S] };
     }
     function landPts(F, g) {
-      const P = new Path2D(); P.addPath(LAND, new DOMMatrix([F.S * dpr, 0, 0, F.S * dpr, F.ox * dpr, F.oy * dpr]));
+      const mask = landMask(LAND, [F.S * dpr, 0, 0, F.S * dpr, F.ox * dpr, F.oy * dpr], Math.round(W * dpr), Math.round(H * dpr));
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       const out = [];
       for (let y = 0; y < H; y += g) for (let x = 0; x < W; x += g) {
         const jx = x + (rnd() - .5) * g * .7, jy = y + (rnd() - .5) * g * .7;
-        if (ctx.isPointInPath(P, jx * dpr, jy * dpr)) out.push([jx, jy]);
+        if (landHas(mask, jx, jy, dpr)) out.push([jx, jy]);
       }
       return out;
     }
