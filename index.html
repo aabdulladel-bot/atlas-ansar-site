@@ -2600,24 +2600,12 @@ body.in-salt .minimap { opacity: 0; pointer-events: none; }
     drawTree();
   });
 
-  /* حفظ الحالة في الرابط، حتى تُفتح الصفحة كما تركتها */
+  /* لا تُكتب حالة العرض في الرابط: يبقى الرابط نظيفًا، ويُحفظ فقط رابط الأسرة #fam-... عند فتحه */
   function saveHash() {
     clearTimeout(saveT);
     saveT = setTimeout(() => {
-      const h = new URLSearchParams();
-      if (st.country) h.set('c', st.country);
-      if (st.place) h.set('p', st.place);
-      const f = st.list[st.idx]; if (f) h.set('f', f.id);
-      if (CUR_REC && !$('#sheet').hidden) h.set('r', CUR_REC);
-      if (GF.g) h.set('g', GF.g);
-      if (TR.mode !== 'belly') h.set('t', TR.mode);
-      if (ENC.sec !== 'people') h.set('e', ENC.sec);
-      if (AZ.mode !== 'ov' && AZ.fo >= 0) h.set('z', AZ.tribes[AZ.fo].name);
-      if (AZ.mode === 'bl' && AZ.bi >= 0) h.set('b', D.bellies.bellies[AZ.bi].name);
-      if (OP.idx > 0 && OP.live) h.set('s', OP.idx + 1);
-      if (LAST8.id && !$('#pdlg').hidden) h.set(LAST8.type === 'fam' ? 'x' : 'q', LAST8.id);
-      const s = h.toString();
-      try { history.replaceState(null, '', s ? '#' + s : location.pathname + location.search); } catch (err) { /* لا يُحفظ في بيئات مقيّدة */ }
+      if (/^#fam-/.test(location.hash)) return;
+      if (location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (err) { /* بيئة مقيّدة */ } }
     }, 150);
   }
   function applyHash() {
