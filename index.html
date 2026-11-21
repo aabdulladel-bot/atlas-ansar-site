@@ -50,7 +50,7 @@
 .salt-full p { margin: 0; }
 .salt-full .nr-read { color: color-mix(in srgb, var(--ink) 70%, transparent); }
 .salt-full .nr-src { font-size: 12px; }
-.salt-hud.open { top: calc(50% + 60px); max-height: calc(100vh - 230px); overflow-y: auto; }
+.salt-hud.open { max-height: calc(100vh - 230px); overflow-y: auto; }
 .salt-hud.open .salt-full { max-height: calc(100vh - 420px); }
 @media (max-width: 899px) { .salt-hud.open { max-height: 76vh; } .salt-hud.open .salt-full { max-height: 34vh; } }
 
@@ -1118,7 +1118,7 @@ body.in-salt .minimap { opacity: 0; pointer-events: none; }
 .op.salt { height: 760vh; margin-inline: calc(50% - 50vw); }
 .salt .op-stick { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 520px; display: block; overflow: hidden; background: #040a08; color: #eef6f2; }
 .salt-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.salt-hud { position: absolute; z-index: 2; inset-inline-start: max(32px, calc(50vw - 560px)); top: 54%; transform: translateY(-50%); width: min(440px, 36vw); padding: 26px 28px 22px; border-radius: 26px; background: rgba(6, 14, 12, .52); border: 1px solid rgba(255, 255, 255, .09); -webkit-backdrop-filter: blur(16px) saturate(1.25); backdrop-filter: blur(16px) saturate(1.25); box-shadow: 0 30px 90px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .06); display: grid; gap: 12px; align-content: start; }
+.salt-hud { position: absolute; z-index: 2; inset-inline-start: max(32px, calc(50vw - 560px)); bottom: 6%; width: min(440px, 36vw); padding: 26px 28px 22px; border-radius: 26px; background: rgba(6, 14, 12, .52); border: 1px solid rgba(255, 255, 255, .09); -webkit-backdrop-filter: blur(16px) saturate(1.25); backdrop-filter: blur(16px) saturate(1.25); box-shadow: 0 30px 90px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .06); display: grid; gap: 12px; align-content: start; }
 .salt .op-k { color: #e4bb62; letter-spacing: .03em; margin: 0; font-size: 13px; }
 .salt .op-h { color: #fbf7ee; font-size: clamp(30px, 3.3vw, 48px); line-height: 1.15; margin: 0; text-shadow: 0 2px 34px rgba(95, 211, 184, .28); }
 .salt .op-p { color: rgba(238, 246, 242, .9); font-size: 16.5px; line-height: 1.9; margin: 0; }
@@ -1148,6 +1148,7 @@ body.in-salt .minimap { opacity: 0; pointer-events: none; }
 .salt-hud.swap > :nth-child(4), .salt-hud.swap > :nth-child(5) { animation-delay: .18s; }
 @keyframes saltIn { from { opacity: 0; transform: translateY(14px); filter: blur(5px); } to { opacity: 1; transform: none; filter: none; } }
 @media (max-width: 899px) {
+  .salt-hud, .salt-skip, .salt-top .salt-skip { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   .op.salt { height: 700vh; }
   .salt-hud { inset-inline: 12px; top: auto; bottom: 16px; transform: none; width: auto; padding: 15px 16px 13px; gap: 8px; border-radius: 20px; max-height: 40vh; overflow: auto; }
   .salt .op-h { font-size: 26px; }
@@ -5141,7 +5142,7 @@ body.in-salt .minimap { opacity: 0; pointer-events: none; }
     }
     function layout() {
       const r = host.getBoundingClientRect();
-      W = Math.max(1, r.width); H = Math.max(1, r.height); dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = Math.max(1, r.width); H = Math.max(1, r.height); dpr = Math.min(W < 720 ? 1.5 : 2, window.devicePixelRatio || 1);
       lastW = W; lastH = H;
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       const wide = W >= 900;
@@ -5259,7 +5260,13 @@ body.in-salt .minimap { opacity: 0; pointer-events: none; }
       const pr = $('#saltProg'); if (pr) pr.style.transform = `scaleX(${Math.min(1, x / NS).toFixed(4)})`;
       const hn = $('#saltHint'); if (hn) hn.classList.toggle('off', x > 0.25);
     }
-    function tick(now) { raf = 0; draw(now); if (vis && !RM && !document.hidden) raf = requestAnimationFrame(tick); }
+    let lastDraw = 0;
+    function tick(now) {
+      raf = 0;
+      /* على الهواتف: 30 إطارًا في الثانية تكفي للحركة، وتخفف الحمل على المعالج والبطارية */
+      if (W >= 720 || now - lastDraw >= 33) { lastDraw = now; draw(now); }
+      if (vis && !RM && !document.hidden) raf = requestAnimationFrame(tick);
+    }
     function kick() { if (!raf && ready && vis) raf = requestAnimationFrame(tick); }
     OP.onPaint = kick;
     new IntersectionObserver(es => { vis = es.some(e => e.isIntersecting); if (vis) kick(); }, { threshold: 0 }).observe(sec);
