@@ -1,0 +1,17 @@
+{
+  "name": "أطلس الأنصار",
+  "short_name": "أطلس الأنصار",
+  "description": "أطلس تفاعلي لأنساب الأنصار وهجراتهم وأعلامهم وأدوارهم عبر التاريخ",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#040a08",
+  "theme_color": "#0f6b5c",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}/* ===== أهداف اللمس على الجوال: منطقة نقر أوسع دون تغيير الشكل ===== */
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f6b5c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="أطلس الأنصار"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}/* ===== أهداف اللمس على الجوال: منطقة نقر أوسع دون تغيير الشكل ===== */
 @media (pointer: coarse) {
   .secnav-in button { min-height: 40px; }
   #opDots button, #qNav button { position: relative; }
@@ -75,6 +75,11 @@
 .salt-hud .salt-leg span { color: #3b4a45 !important; }
 .salt-hud .op-go { background: #0f6b5c !important; border-color: #0f6b5c !important; color: #fff !important; }
 .salt-hud .salt-read { background: rgba(255,255,255,.9) !important; color: #14211d !important; border-color: rgba(20,33,29,.25) !important; }
+/* ===== المكتبة: تصفية بالتصنيف ===== */
+.libcats { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 12px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.libcats::-webkit-scrollbar { display: none; }
+.libcats .chipb { flex: 0 0 auto; white-space: nowrap; }
+.libcats .chipb[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -228,6 +233,7 @@
   <section aria-labelledby="h-lib">
     <div class="head"><h2 id="h-lib">المكتبة</h2><span class="crumb">الكتب والدراسات حول الأنصار</span></div>
     <div class="tbar"><input id="libQ" type="search" placeholder="ابحث بعنوان الكتاب أو مؤلفه" autocomplete="off" aria-label="بحث في المكتبة"></div>
+    <div class="libcats" id="libCats" role="group" aria-label="تصفية حسب التصنيف"></div>
     <div class="ringbox" id="ringbox"><div class="ring" id="ring"></div>
       <button class="nav prev" id="rprev" type="button" aria-label="الكتاب السابق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="nav next" id="rnext" type="button" aria-label="الكتاب التالي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
