@@ -589,7 +589,26 @@ function landHas(mask, x, y, dpr) {
 
 
   /* library ring */
-  let books = D.studies; let ri = 0;
+  let books = D.studies; let ri = 0; let libQuery = ''; let libCat = '';
+  const catLabel = c => (c || 'أخرى').split(':')[0].trim();
+  /* التصنيفات القليلة (أقل من ثلاثة كتب) تجتمع تحت «أخرى» حتى لا تزدحم الأزرار */
+  const CAT_N = new Map();
+  D.studies.forEach(b => { const k = catLabel(b.cat); CAT_N.set(k, (CAT_N.get(k) || 0) + 1); });
+  const catKey = b => { const k = catLabel(b.cat); return CAT_N.get(k) >= 3 ? k : 'أخرى'; };
+  function applyLib() {
+    books = D.studies.filter(b => (!libCat || catKey(b) === libCat) && (!libQuery || norm(b.title + ' ' + (b.author || '')).includes(libQuery)));
+    ri = 0; drawRing();
+    document.querySelectorAll('#libCats [data-lc]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.lc === libCat)));
+  }
+  function drawLibCats() {
+    const counts = new Map();
+    D.studies.forEach(b => { const k = catKey(b); counts.set(k, (counts.get(k) || 0) + 1); });
+    const keys = [...counts.keys()].sort((a, c) => counts.get(c) - counts.get(a) || a.localeCompare(c, 'ar'));
+    $('#libCats').innerHTML = [`<button type="button" class="chipb" data-lc="" aria-pressed="${!libCat}">الكل · ${D.studies.length}</button>`]
+      .concat(keys.map(k => `<button type="button" class="chipb" data-lc="${esc(k)}" aria-pressed="${libCat === k}">${esc(k)} · ${counts.get(k)}</button>`)).join('');
+  }
+  $('#libCats').addEventListener('click', e => { const b = e.target.closest('[data-lc]'); if (!b) return; libCat = b.dataset.lc; applyLib(); });
+  drawLibCats();
   function drawRing() {
     $('#ring').innerHTML = books.map(b => `<div class="bk"><span class="spine"></span><span class="bc">${esc(b.cat)}</span><span class="bt">${esc(b.title)}</span><span class="ba">${esc(b.author || 'المؤلف غير مثبت')}${b.year ? ' · ' + esc(b.year) : ''}</span></div>`).join('');
     layoutRing();
@@ -1398,11 +1417,7 @@ function landHas(mask, x, y, dpr) {
     const b = e.target.closest('[data-r]'); if (!b) return;
     LS3.route = b.dataset.r; $$('#routemode button').forEach(x => x.classList.toggle('on', x === b)); drawMaps();
   });
-  $('#libQ').addEventListener('input', e => {
-    const q = norm(e.target.value.trim());
-    books = q ? D.studies.filter(b => norm(b.title + ' ' + (b.author || '')).includes(q)) : D.studies;
-    ri = 0; drawRing();
-  });
+  $('#libQ').addEventListener('input', e => { libQuery = norm(e.target.value.trim()); applyLib(); });
   /* الشجرة الكاملة (الرسم): الجذر ← القبيلة ← البطن ← الصحابي ← الذرية والأسر ← الفروع والمحطات */
   const TG = { open: new Set(['T']), thr: false, vb: null, tree: null, seq: 0 };
   const GW4 = { root: 230, tribe: 190, belly: 220, person: 240, desc: 240, family: 240, branch: 270 };
