@@ -80,6 +80,17 @@
 .libcats::-webkit-scrollbar { display: none; }
 .libcats .chipb { flex: 0 0 auto; white-space: nowrap; }
 .libcats .chipb[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* section intros: heading on top, its two short lines under it, right-aligned */
+div.head{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px}
+.head .crumb{display:block;text-align:start;align-self:stretch;max-width:62ch;font-size:14.5px;line-height:1.8;color:var(--muted)}
+.lede span{display:block}
+.lede{max-width:none;text-wrap:balance}
+@media (max-width:560px){
+  p.lede{font-size:clamp(13px,calc((100vw - 76px) / 20.5),15.5px);line-height:1.8}
+  .head .crumb{font-size:13.5px;line-height:1.75}
+}
+.op-p,.dcard p{white-space:pre-line}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -106,7 +117,7 @@
     <div class="hl-tip" id="hlTip" hidden></div>
     <p class="kicker">أطلس الأنصار · أسر وبطون وأدلة</p>
     <h1><span class="h1-top">الأنصار</span><span class="h1-sub">من <span>المدينة</span> إلى حواضر العالم</span></h1>
-    <p class="lede">أسر قبيلة الأنصار وبطونهم ومدنهم من المدينة إلى اليوم.<br>وكل أسرة تُعرض بأساس انتسابها كما تثبتها النصوص والوثائق.</p>
+    <p class="lede"><span>أسر الأنصار وبطونهم ومدنهم، من المدينة إلى اليوم.</span><span>وكل أسرة بأساس نسبها، كما تثبته النصوص والوثائق.</span></p>
     <div class="hero-acts">
       <button type="button" class="hero-go" id="heroStart">ابدأ من هنا</button>
       <button type="button" class="hero-sec" id="heroMap">افتح الخريطة</button>
@@ -119,7 +130,7 @@
     <div class="entries">
       <details class="entry e-det" id="entAbout"><summary><span class="num">01</span><b>نبذة عن الأطلس</b><small>ما هو؟ ومن أين جاءت بياناته؟ وكيف تُقرأ الإحالات؟</small></summary><div class="e-body" id="entAboutB"></div></details>
       <details class="entry e-det" id="entTexts"><summary><span class="num">02</span><b>الأنصار في القرآن والسنة</b><small>آيات وأحاديث يُستشهد بها في فضل الأنصار، مع إحالاتها</small></summary><div class="e-body" id="entTextsB"></div></details>
-      <details class="entry e-det" id="entNarr"><summary><span class="num">03</span><b>السردية: من أين خرج الأنصار ولماذا تفرّقوا</b><small>ثماني مراحل، ولكل مرحلة دليلها من النص</small></summary><div class="e-body" id="entNarrB"></div></details>
+      <details class="entry e-det" id="entNarr"><summary><span class="num">03</span><b>السردية: من أين خرج الأنصار ولماذا تفرّقوا</b><small>سبعة فصول، ولكل فصل دليله من النص</small></summary><div class="e-body" id="entNarrB"></div></details>
     </div>
     <a class="nr-start" href="#h-open">ابدأ الرحلة: السردية في سبعة فصول، والخريطة معها ↓</a>
     <div class="deck" id="deck" tabindex="0" aria-label="مراحل السردية، استخدم الأسهم أو اسحب للتنقل"></div>
@@ -152,26 +163,26 @@
       <datalist id="fjList"></datalist>
     </div>
     <div class="fj-stage" id="fjStage" hidden><canvas id="fjCv" aria-hidden="true"></canvas></div>
-    <div class="fj-out" id="fjOut" aria-live="polite"><p class="fj-note">اكتب اسم أسرتك، أو اسم جدّها، أو اسم بطنها. لا يُحفظ شيء مما تكتبه.</p></div>
+    <div class="fj-out" id="fjOut" aria-live="polite"><p class="fj-note">اكتب اسم أسرتك، أو اسم جدّها، أو اسم بطنها.<br>لا يُحفظ شيء مما تكتبه.</p></div>
   </section>
   <section aria-labelledby="h-az">
-    <div class="head"><h2 id="h-az">القبائل والبطون</h2><span class="crumb">القبيلة ثم البطن ثم فروعه في تسلسل واحد: اضغط القبيلة لتتسع، ثم البطن لتقرأ</span></div>
+    <div class="head"><h2 id="h-az">القبائل والبطون</h2><span class="crumb">القبيلة ثم البطن ثم فروعه، في تسلسل واحد.<br>اضغط القبيلة لتتسع، ثم البطن لتقرأ.</span></div>
     <div class="az-bar"><button type="button" id="azBack" hidden>رجوع إلى القبيلتين</button><span class="crumb" id="azCrumb"></span></div>
     <div class="az" id="azCanvas"></div>
   </section>
   <section aria-labelledby="h-wv">
-    <div class="head"><h2 id="h-wv">أحاديث الأنصار</h2><span class="crumb">فضائلهم في الحديث، ومعنى كل حديث بعبارة مبسطة</span></div>
+    <div class="head"><h2 id="h-wv">أحاديث الأنصار</h2><span class="crumb">فضائل الأنصار كما جاءت في الحديث.<br>ومع كل حديث معناه بعبارة سهلة.</span></div>
     <div class="qstage" id="qstage" tabindex="0" aria-label="عبارات أحاديث الأنصار، استخدم الأسهم أو اسحب"><canvas class="q-cv" id="qCv" aria-hidden="true"></canvas><div class="q-in"><p class="q-k">من الحديث</p><blockquote class="q-text" id="qText"></blockquote><p class="q-src" id="qSrc"></p><p class="q-count" id="qCount"></p><div class="q-acts"><button type="button" id="qPrev" aria-label="السابقة">‹</button><div class="q-nav" id="qNav"></div><button type="button" id="qNext" aria-label="التالية">›</button></div><button type="button" class="q-more" id="qMore" aria-expanded="false">اقرأ الروايات</button><div class="q-list" id="qList" hidden></div></div></div>
     <div id="themes" class="themes"></div>
   </section>
 
   <section aria-labelledby="h-bt">
-    <div class="head"><h2 id="h-bt">بطون الأنصار في الوحيين</h2><span class="crumb">كل بطن بنصوصه وشرحها، والشجرة من القبيلة إلى البطن</span></div>
+    <div class="head"><h2 id="h-bt">بطون الأنصار في الوحيين</h2><span class="crumb">كل بطن بنصوصه وشرحها.<br>والشجرة من القبيلة إلى البطن.</span></div>
     <div id="btree" class="btree"></div>
   </section>
 
   <section aria-labelledby="h-gr">
-    <div class="head"><h2 id="h-gr">درجات الأحاديث ومصادرها</h2><span class="crumb">كل حديث مذكور في الصفحة مع كتابه ورقمه ودرجته، والأرقام بترقيم النسخة المرجعية</span></div>
+    <div class="head"><h2 id="h-gr">درجات الأحاديث ومصادرها</h2><span class="crumb">كل حديث في الصفحة بكتابه ورقمه ودرجته.<br>والأرقام بترقيم النسخة المرجعية.</span></div>
     <div class="gbar gbar-ctl">
       <select id="gcol" aria-label="الكتاب"><option value="all">كل الكتب</option><option value="bukhari">صحيح البخاري</option><option value="muslim">صحيح مسلم</option><option value="abudawud">سنن أبي داود</option><option value="tirmidhi">جامع الترمذي</option><option value="nasai">سنن النسائي</option><option value="ibnmajah">سنن ابن ماجه</option></select>
       <select id="ggr" aria-label="الدرجة"><option value="all">كل الدرجات</option><option value="صحيح">صحيح</option><option value="حسن">حسن</option><option value="ضعيف">ضعيف</option><option value="منكر">منكر أو شاذ</option><option value="none">بلا حكم في المصدر</option></select>
@@ -184,8 +195,8 @@
   </section>
 
   <section aria-labelledby="h-places">
-    <div class="head"><h2 id="h-places">الجغرافيا</h2><span class="crumb">الدول ومدنها، ومواضع الأسر على الخريطة</span></div>
-    <div class="geo-bar"><p class="muted">كل كوكبة دولة، ومدنها مطوية تحتها بترتيب أقدم ذكر في السجل.</p><button type="button" class="geo-go" id="geoMap">الخريطة الكاملة بطبقاتها وزمنها ←</button></div>
+    <div class="head"><h2 id="h-places">الجغرافيا</h2><span class="crumb">كل دولة كوكبة، ومدنها مطوية تحتها.<br>والمدن مرتبة بأقدم ذكر لها في السجل.</span></div>
+    <div class="geo-bar"><button type="button" class="geo-go" id="geoMap">الخريطة الكاملة بطبقاتها وزمنها ←</button></div>
     <div class="cstage" id="cstage"><canvas class="cs-cv" id="csCv" aria-hidden="true"></canvas><div class="rl-tip" id="csTip" hidden></div></div>
     <div class="tabs" id="countries" role="toolbar" aria-label="الدول" hidden></div>
     <div class="strip" id="strip"></div>
@@ -193,7 +204,7 @@
 
 
   <section aria-labelledby="h-tree">
-    <div class="head"><h2 id="h-tree">شجرة الأنساب</h2><span class="crumb">الجذور أولًا، ثم الفروع تحتها · «بطاقة» تفتح الأسرة</span></div>
+    <div class="head"><h2 id="h-tree">شجرة الأنساب</h2><span class="crumb">الجذور أولًا، ثم الفروع تحتها.<br>واضغط «بطاقة» لتفتح الأسرة.</span></div>
     <div class="rootlit" id="rootLit"><canvas class="rl-cv" id="rlCv" aria-hidden="true"></canvas><div class="rl-tip" id="rlTip" hidden></div></div>
     <div class="tbar">
       <input id="treeQ" type="search" placeholder="ابحث في الشجرة" autocomplete="off" aria-label="بحث في الشجرة">
@@ -217,10 +228,10 @@
     <p class="book-note" id="treeNote"></p>
   </section>
   <section aria-labelledby="h-enc">
-    <div class="head"><h2 id="h-enc">الموسوعة</h2><span class="crumb">الصحابة والأعلام، والبطون، والأسر، والمصادر</span></div>
+    <div class="head"><h2 id="h-enc">الموسوعة</h2><span class="crumb">الصحابة والأعلام، والبطون، والأسر، والمصادر.<br>كلها في سماء واحدة، وفهارس تحتها.</span></div>
     <div class="sky" id="sky"><canvas class="sky-cv" id="skyCv" aria-hidden="true"></canvas><div class="rl-tip" id="skyTip" hidden></div></div>
-    <div class="sky-bar"><div><p class="sky-line">كل نجمة صحابي، ولون النجمة لون قبيلته. اضغط النجمة لتفتح بطاقته.</p><details class="sky-how"><summary>كيف تُقرأ السماء</summary><p>كل عنقود بطن، والخيوط نسب الأب بالابن. الهالة لبدر، والنواة لشهود العقبة الثانية، والخفيف لشهود العقبة الأولى. المجوّفة: مختلف في ذكره. الحلفاء باهتون في عنقودهم.</p></details></div><button type="button" class="sky-tg" id="skyAlly" aria-pressed="true">إخفاء الحلفاء</button></div>
-    <p class="sec-desc">اختر القسم، ثم صفِّ بالاسم أو القبيلة، واضغط أي مجموعة لتفتح ما فيها.</p>
+    <div class="sky-bar"><div><p class="sky-line">كل نجمة صحابي، ولونها لون قبيلته.<br>اضغط النجمة لتفتح بطاقته.</p><details class="sky-how"><summary>كيف تُقرأ السماء</summary><p>كل عنقود بطن، والخيوط نسب الأب بالابن.<br>الهالة لأهل بدر، والنواة لشهود العقبة الثانية، والخفيفة لشهود العقبة الأولى.<br>المجوّفة: مختلف في ذكره. والحلفاء باهتون في عنقودهم.</p></details></div><button type="button" class="sky-tg" id="skyAlly" aria-pressed="true">إخفاء الحلفاء</button></div>
+    <p class="sec-desc">اختر القسم، ثم صفِّ بالاسم أو القبيلة.<br>واضغط أي مجموعة لتفتح ما فيها.</p>
     <div class="tbar">
       <div class="mseg" id="encsec" role="group" aria-label="أقسام الموسوعة"><button type="button" data-s="people" class="on">الصحابة والأعلام</button><button type="button" data-s="bellies">البطون</button><button type="button" data-s="families">الأسر</button><button type="button" data-s="acts">الأعمال والمناصب</button><button type="button" data-s="records">السجلات</button><button type="button" data-s="sources">المصادر</button></div>
       <input id="encQ" type="search" placeholder="تصفية بالاسم أو البطن" autocomplete="off" aria-label="تصفية الموسوعة">
@@ -231,7 +242,7 @@
     <div class="encgrid" id="encbody"></div>
   </section>
   <section aria-labelledby="h-lib">
-    <div class="head"><h2 id="h-lib">المكتبة</h2><span class="crumb">الكتب والدراسات حول الأنصار</span></div>
+    <div class="head"><h2 id="h-lib">المكتبة</h2><span class="crumb">كتب ودراسات عن الأنصار، بعد التحقق من بياناتها.<br>اختر تصنيفًا، أو ابحث بالعنوان أو المؤلف.</span></div>
     <div class="tbar"><input id="libQ" type="search" placeholder="ابحث بعنوان الكتاب أو مؤلفه" autocomplete="off" aria-label="بحث في المكتبة"></div>
     <div class="libcats" id="libCats" role="group" aria-label="تصفية حسب التصنيف"></div>
     <div class="ringbox" id="ringbox"><div class="ring" id="ring"></div>
@@ -241,7 +252,7 @@
     <p class="book-note" id="bookNote"></p>
   </section>
 
-  <footer>البيانات من الأطلس نفسه: الأسر المقبولة ومحطاتها وأصولها كما في الكتاب، مع أرقام السطور. للطبقات والزمن وشجرة الأنساب الكاملة: الأطلس التفصيلي.</footer>
+  <footer>البيانات من الأطلس نفسه: الأسر المقبولة ومحطاتها وأصولها كما في الكتاب، مع أرقام السطور.<br>للطبقات والزمن وشجرة الأنساب الكاملة: الأطلس التفصيلي.</footer>
 </div>
 
 <button class="minimap" id="mini" type="button" aria-label="افتح الخريطة">
